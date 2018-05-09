@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 /**
@@ -6,15 +6,16 @@ import { Injectable } from '@angular/core';
  */
 @Injectable()
 export class Api {
-  url: string = 'https://example.com/api/v1';
+  url: string = 'http://192.168.31.129:8080';
 
-  constructor(public http: HttpClient) {
-  }
+  constructor(public http: HttpClient) { }
 
   get(endpoint: string, params?: any, reqOpts?: any) {
     if (!reqOpts) {
       reqOpts = {
-        params: new HttpParams()
+        params: new HttpParams(),
+        headers: new HttpHeaders().set('Content-Type', 'application/json'),
+        observe: 'response'
       };
     }
 
@@ -25,11 +26,15 @@ export class Api {
         reqOpts.params = reqOpts.params.set(k, params[k]);
       }
     }
-
     return this.http.get(this.url + '/' + endpoint, reqOpts);
   }
 
   post(endpoint: string, body: any, reqOpts?: any) {
+    reqOpts = {
+      params: new HttpParams(),
+      headers: new HttpHeaders().set('Content-Type', 'application/json'),
+      observe: 'response'
+    };
     return this.http.post(this.url + '/' + endpoint, body, reqOpts);
   }
 
@@ -38,6 +43,12 @@ export class Api {
   }
 
   delete(endpoint: string, reqOpts?: any) {
+    reqOpts = {
+      params: new HttpParams(),
+      headers: new HttpHeaders().set('Content-Type', 'application/json'),
+      observe: 'response'
+    };
+    console.log(reqOpts);
     return this.http.delete(this.url + '/' + endpoint, reqOpts);
   }
 

@@ -9,9 +9,14 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
-import { Items } from '../mocks/providers/items';
+import { Items } from '../providers/items/items';
+import { Notes } from '../providers/notes/notes';
 import { Settings, User, Api } from '../providers';
 import { MyApp } from './app.component';
+
+import { JWT_OPTIONS, JwtModule } from '@auth0/angular-jwt';
+import { FilesService } from '../providers/files-service/files-service';
+import { WindowRef } from '../providers/window-ref/window-ref';
 
 // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.
@@ -34,6 +39,13 @@ export function provideSettings(storage: Storage) {
   });
 }
 
+export function jwtOptionsFactory(storage: Storage) {
+  return {
+    tokenGetter: () => storage.get('jwtToken'),
+    whitelistedDomains: ['192.168.31.129:8080']
+  }
+}
+
 @NgModule({
   declarations: [
     MyApp
@@ -41,6 +53,13 @@ export function provideSettings(storage: Storage) {
   imports: [
     BrowserModule,
     HttpClientModule,
+    JwtModule.forRoot({
+      jwtOptionsProvider: {
+        provide: JWT_OPTIONS,
+        useFactory: jwtOptionsFactory,
+        deps: [Storage]
+      }
+    }),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -58,7 +77,10 @@ export function provideSettings(storage: Storage) {
   providers: [
     Api,
     Items,
+    Notes,
     User,
+    FilesService,
+    WindowRef,
     Camera,
     SplashScreen,
     StatusBar,

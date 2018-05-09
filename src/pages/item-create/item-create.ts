@@ -1,7 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup/*, Validators*/ } from '@angular/forms';
 import { Camera } from '@ionic-native/camera';
-import { IonicPage, NavController, ViewController } from 'ionic-angular';
+import { IonicPage, NavController, ViewController, ToastController } from 'ionic-angular';
+import { Notes, FilesService } from '../../providers';
 
 @IonicPage()
 @Component({
@@ -13,21 +14,30 @@ export class ItemCreatePage {
 
   isReadyToSave: boolean;
 
-  item: any;
+  item: any = { content: '', image: '' };
 
   form: FormGroup;
 
-  constructor(public navCtrl: NavController, public viewCtrl: ViewController, formBuilder: FormBuilder, public camera: Camera) {
+  constructor(
+    public navCtrl: NavController,
+    public viewCtrl: ViewController,
+    formBuilder: FormBuilder,
+    public camera: Camera,
+    public notes: Notes,
+    public toastCtrl: ToastController,
+    public filesService: FilesService
+  ) {
     this.form = formBuilder.group({
       profilePic: [''],
-      name: ['', Validators.required],
-      about: ['']
+      // name: ['', Validators.required],
+      content: ['']
     });
 
     // Watch the form for changes, and
     this.form.valueChanges.subscribe((v) => {
       this.isReadyToSave = this.form.valid;
     });
+
   }
 
   ionViewDidLoad() {
@@ -51,6 +61,8 @@ export class ItemCreatePage {
   }
 
   processWebImage(event) {
+    this.fileUpload(event);
+
     let reader = new FileReader();
     reader.onload = (readerEvent) => {
 
@@ -59,6 +71,17 @@ export class ItemCreatePage {
     };
 
     reader.readAsDataURL(event.target.files[0]);
+  }
+
+  fileUpload(event) {
+    const file: File = this.fileInput.nativeElement.files[0];
+    this.filesService.uploadFile('api/files', file)
+      .subscribe(res => {
+        this.item.image = res['filename'];
+
+        console.log(this.form.value)
+        // this.getImage(this.note.image);
+      });
   }
 
   getProfileImageStyle() {
@@ -78,6 +101,7 @@ export class ItemCreatePage {
    */
   done() {
     if (!this.form.valid) { return; }
-    this.viewCtrl.dismiss(this.form.value);
+    this.item.content = this.form.value['content'];
+    this.viewCtrl.dismiss(this.item);
   }
 }

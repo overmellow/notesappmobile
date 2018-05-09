@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage, ModalController, NavController } from 'ionic-angular';
+import { IonicPage, ModalController, NavController, ToastController } from 'ionic-angular';
 
-import { Item } from '../../models/item';
-import { Items } from '../../providers';
+import { Note } from '../../models/note';
+import { Notes } from '../../providers';
 
 @IonicPage()
 @Component({
@@ -10,10 +10,11 @@ import { Items } from '../../providers';
   templateUrl: 'list-master.html'
 })
 export class ListMasterPage {
-  currentItems: Item[];
+  currentItems: Note[];
 
-  constructor(public navCtrl: NavController, public items: Items, public modalCtrl: ModalController) {
-    this.currentItems = this.items.query();
+  constructor(public navCtrl: NavController, public notes: Notes, public modalCtrl: ModalController, public toastCtrl: ToastController) {
+    //this.currentItems = this.items.query();
+    this.getNotes();
   }
 
   /**
@@ -22,6 +23,12 @@ export class ListMasterPage {
   ionViewDidLoad() {
   }
 
+  ionViewWillEnter() {
+    this.getNotes();
+  }
+
+  ionViewOnE
+
   /**
    * Prompt the user to add a new item. This shows our ItemCreatePage in a
    * modal and then adds the new item to our data source if the user created one.
@@ -29,8 +36,19 @@ export class ListMasterPage {
   addItem() {
     let addModal = this.modalCtrl.create('ItemCreatePage');
     addModal.onDidDismiss(item => {
+      console.log(item)
       if (item) {
-        this.items.add(item);
+        let note: Note = { id: null, content: item.content, image: item.image };
+        this.notes.add(note)
+          .subscribe((val) => {
+            let toast = this.toastCtrl.create({
+              message: 'Note Added!',
+              duration: 3000,
+              position: 'top'
+            });
+            toast.present();
+            this.getNotes();
+          })
       }
     })
     addModal.present();
@@ -39,16 +57,35 @@ export class ListMasterPage {
   /**
    * Delete an item from the list of items.
    */
-  deleteItem(item) {
-    this.items.delete(item);
+  deleteItem(note) {
+    this.notes.delete(note).subscribe((val) => {
+      let toast = this.toastCtrl.create({
+        message: 'Note Deleted!',
+        duration: 3000,
+        position: 'top'
+      });
+      this.getNotes();
+    });
   }
 
   /**
    * Navigate to the detail page for this item.
    */
-  openItem(item: Item) {
+  openItem(note: Note) {
     this.navCtrl.push('ItemDetailPage', {
-      item: item
+      note: note
     });
+  }
+
+  doRefresh(refresher) {
+    this.getNotes();
+    refresher.complete();
+  }
+
+  getNotes() {
+    this.notes.query()
+      .subscribe(res => {
+        this.currentItems = res['body'];
+      });
   }
 }

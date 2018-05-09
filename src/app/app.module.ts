@@ -42,7 +42,7 @@ export function provideSettings(storage: Storage) {
 export function jwtOptionsFactory(storage: Storage) {
   return {
     tokenGetter: () => storage.get('jwtToken'),
-    whitelistedDomains: ['192.168.31.129:8080']
+    whitelistedDomains: ['192.168.31.129:8080', '50.18.222.96:8080']
   }
 }
 

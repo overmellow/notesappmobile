@@ -9,7 +9,8 @@ import { Observable } from 'rxjs/Observable';
 */
 @Injectable()
 export class FilesService {
-  url: string = 'http://192.168.31.129:8080/';
+  url: string = 'http://50.18.222.96:8080/';
+  // url: string = 'http://192.168.31.129:8080/';
 
   constructor(public httpClient: HttpClient) { }
 

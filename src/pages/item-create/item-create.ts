@@ -47,11 +47,14 @@ export class ItemCreatePage {
   getPicture() {
     if (Camera['installed']()) {
       this.camera.getPicture({
-        destinationType: this.camera.DestinationType.DATA_URL,
+        destinationType: this.camera.DestinationType.FILE_URI,
+        // destinationType: this.camera.DestinationType.DATA_URL,
         targetWidth: 96,
         targetHeight: 96
       }).then((data) => {
-        this.form.patchValue({ 'profilePic': 'data:image/jpg;base64,' + data });
+        console.log(data);
+        this.fileUploadWithoutEvent(data);
+        // this.form.patchValue({ 'profilePic': 'data:image/jpg;base64,' + data });
       }, (err) => {
         alert('Unable to take photo');
       })
@@ -75,6 +78,17 @@ export class ItemCreatePage {
 
   fileUpload(event) {
     const file: File = this.fileInput.nativeElement.files[0];
+    this.filesService.uploadFile('api/files', file)
+      .subscribe(res => {
+        this.item.image = res['filename'];
+
+        console.log(this.form.value)
+        // this.getImage(this.note.image);
+      });
+  }
+
+
+  fileUploadWithoutEvent(file: File) {
     this.filesService.uploadFile('api/files', file)
       .subscribe(res => {
         this.item.image = res['filename'];

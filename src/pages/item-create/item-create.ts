@@ -52,8 +52,11 @@ export class ItemCreatePage {
         targetWidth: 96,
         targetHeight: 96
       }).then((data) => {
-        console.log(data);
-        this.fileUploadWithoutEvent(data);
+        this.form.controls.profilePic = data;
+        //console.log(data);
+        // this.fileUploadWithoutEvent(data);
+        // this.imageUpload(data);
+        // this.form.setValue({})
         // this.form.patchValue({ 'profilePic': 'data:image/jpg;base64,' + data });
       }, (err) => {
         alert('Unable to take photo');
@@ -96,6 +99,19 @@ export class ItemCreatePage {
         console.log(this.form.value)
         // this.getImage(this.note.image);
       });
+  }
+
+  imageUpload(file: File) {
+    this.filesService.uploadImage(file)
+      .then((val) => {
+        this.item.image = val['filename'];
+      })
+      // .subscribe(res => {
+      //   this.item.image = res['filename'];
+
+      //   console.log(this.form.value)
+      //   // this.getImage(this.note.image);
+      // });
   }
 
   getProfileImageStyle() {

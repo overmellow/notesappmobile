@@ -8,6 +8,10 @@ import { IonicStorageModule, Storage } from '@ionic/storage';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
+import { File } from '@ionic-native/file';
+import { Transfer, TransferObject } from '@ionic-native/transfer';
+import { FilePath } from '@ionic-native/file-path';
+import { FileTransfer } from '@ionic-native/file-transfer';
 
 import { Items } from '../providers/items/items';
 import { Notes } from '../providers/notes/notes';
@@ -82,6 +86,7 @@ export function jwtOptionsFactory(storage: Storage) {
     FilesService,
     WindowRef,
     Camera,
+    FileTransfer,
     SplashScreen,
     StatusBar,
     { provide: Settings, useFactory: provideSettings, deps: [Storage] },
